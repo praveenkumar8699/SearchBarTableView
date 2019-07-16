@@ -30,7 +30,14 @@ class TableViewController: UITableViewController,UISearchResultsUpdating {
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        self.navigationItem.rightBarButtonItem = self.editButtonItem
+    }
+    
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        
+        let storedData = actors[sourceIndexPath.row]
+        actors.remove(at: sourceIndexPath.row)
+        actors.insert(storedData, at: destinationIndexPath.row)
     }
     
     func updateSearchResults(for searchController: UISearchController) {
@@ -43,6 +50,36 @@ class TableViewController: UITableViewController,UISearchResultsUpdating {
         tableView.reloadData()
         
         print(result!)
+    }
+    
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        
+        var style = UITableViewCell.EditingStyle(rawValue: 1)
+        
+        if(indexPath.row % 2 == 0) {
+            style = UITableViewCell.EditingStyle.insert
+        } else {
+            style = UITableViewCell.EditingStyle.delete
+        }
+        
+        return style!
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        switch editingStyle {
+            
+        case UITableViewCell.EditingStyle.delete:
+            actors.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.fade)
+            
+        case UITableViewCell.EditingStyle.insert:
+            actors.insert("Parineeti Chopra", at: indexPath.row)
+            tableView.insertRows(at: [indexPath], with: UITableView.RowAnimation.fade)
+            
+        default:
+            print("default")
+        }
     }
 
     // MARK: - Table view data source
